@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title></title>
+{% endblock %}
+
+{% block body %}
+<div class='card'>
+    <div class='subtitle'>注意</div>
+    <div class='subcontent'>
+        您当前未设置查看密码，<br>
+        是否现在设置密码及找回邮箱？<br>
+        <div class='button' onclick="window.open('{% url 'doofen:exam' %}','_self')">不了谢谢</div>
+        <form method='post' action=''>
+            {% csrf_token %}
+            {{form.as_p}}
+            <input class='button' type='submit' value='提交设置'>
+        </form>
+    </div>
+</div>
+{% endblock %}

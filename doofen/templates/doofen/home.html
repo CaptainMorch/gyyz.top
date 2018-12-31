@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %} 
+<title>月考报告查询</title>
+{% endblock %}
+
+{% block body %}
+<div class='card'>
+    <div class='subtitle'>注意</div>
+    <div class='subcontent'>
+        0.请尊重他人，不要私自查询他人成绩！<br>
+        1.以下查询数据均来自'多分网'（学校阅卷系统提供商）<br>
+        2.本站通过部分老师提供的账号进行正常方式查询，不会伤害到花花草草<br>
+        3.所要求提交的信息将且仅将被用以核验身份<br>
+        <div class="button" onclick="window.open('{% url 'doofen:check' %}','_self')">知道了</div>
+    </div>
+</div>
+{% endblock %}

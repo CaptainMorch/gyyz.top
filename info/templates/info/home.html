@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+<title>高考信息聚合</title>
+{% endblock %}
+
+{% block body %}
+<div class='card'>
+    <div class='subtitle'>须知</div>
+    <div class='subcontent'>
+        以下信息均收集自有关部门/高校官网<br>
+        并全部为直达链接，百分百权威——<br>
+        所以本站还是不对真实性负责╮(︶﹏︶)╭<br>
+        龟速更新中，欢迎加入
+    </div>
+</div>
+<div class='card'>
+    <div class='subtitle'>分类</div>
+    <div class='subcontent'>
+        <div onclick="window.open('/info/score','_self')">分数统计数据（贵州省）</div>
+        <div onclick="window.open('/info/tree','_self')">高校/专业目录（全国/贵州省）</div>
+        <div><del>权威高校排名（全世界/全国）</del></div>
+        <div><del>高校历年招生数据（贵州省）</del></div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>发送成功</title>
+{% endblock %}
+
+{% block body %}
+<div class='card'>
+    <div class='subtitle'>成功</div>
+    <div class='subcontent'>
+        验证链接已发送至您的邮箱，请在两小时内点击并重置密码。
+        <div class='button' onclick="window.open('/','_self')">回到首页</div>
+    </div>
+</div>
+{% endblock %}

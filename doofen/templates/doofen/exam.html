@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title></title>
+<script>
+    var subjects = JSON.parse('{{subjects|safe}}');
+
+    $(function(){
+        $("#id_exam").change(function(){
+            var subs = subjects[$("#id_exam").val()];
+
+            $("#id_subjects").empty();
+            for(var i=0;i<subs.length;i++){
+                var $option = $("<option></option>");
+                $option.text(subs[i]);
+                $("#id_subjects").append($option);
+            }
+        });
+        $("#button").click(function(){
+            var $s = $("#id_subjects");
+            $("#val_subs").val(JSON.stringify($s.val()));
+            $s.remove();
+            // I don't know why Django can't receive an array from post.
+
+            $("#button").text("正在跳转...");
+            $("#button").off("click");
+            $("#submit").click();
+        });
+
+        $("#sumbutton").click(function(){
+            var $s = $("#sumsubs");
+            if(!$s.val()){
+                window.alert("麻烦选择学科好吗");
+                return;
+            }
+            $("#sumval").val(JSON.stringify($s.val()));
+            $s.remove();
+            // I don't know why Django can't receive an array from post.
+
+            $("#sumbutton").text("正在跳转...");
+            $("#sumbutton").off("click");
+            $("#sumsubmit").click();
+
+        });
+
+        $("#id_exam").change();
+    });
+</script>
+{% endblock %}
+
+{% block body %}
+<div class='card'>
+    <div clas='subtitle'>考试报告</div>
+    <div class='subcontent'>
+        <form action='{% url 'doofen:exam' %}' method='post'>
+            {% csrf_token %}
+
+            <select name='exam_id' id='id_exam'>
+            {% for exam in exams %}
+                <option value={{exam.id}}>{{exam.name}}</option>
+            {% endfor %}
+            </select><br>
+            选择学科（默认全选）<br>
+            <select id='id_subjects' multiple>
+            
+            </select><br>
+            {% if device_type == 'pc' %}
+            <p>按住Ctrl以多选学科</p>
+            {% endif %}
+            <input type="hidden" id="val_subs" name="subjects">
+            <div class='button' id='button'>提交</div>
+            <input hidden type='submit' id='submit' value='ok'>
+        </form>
+    </div>
+</div>
+<div class='card'>
+    <div class='subtitle'>分数统计</div>
+    <div class='subcontent'>
+        生成各科历次考试年级排名折线图<br>
+        <form action='{% url 'doofen:sumpost' %}' method='post'>
+            {% csrf_token %}
+            <p>请手动选择科目！</p>
+            {% if device_type == 'pc' %}
+            <p>按住Ctrl以多选学科</p>
+            {% endif %}
+
+            <select id='sumsubs' multiple>
+                <option>语文</option>
+                <option>数学</option>
+                <option>英语</option>
+                <option>物理</option>
+                <option>化学</option>
+                <option>生物</option>
+                <option>政治</option>
+                <option>历史</option>
+                <option>地理</option>
+            </select>
+            <input type='hidden' id='sumval' name='subjects'>
+            <div class='button' id='sumbutton'>查询</div>
+            <input hidden type='submit' id='sumsubmit' value='ok'>
+        </form>
+    </div>
+</div>
+<div class='card'>
+    <div class='subtitle'>注意</div>
+    <div class='subcontent'>
+        以上考试/学科列表不进行自动更新<br>
+        且每班级每三小时内最多手动更新一次<br>
+        上次更新: {{update_time|date:'Y年n月j日H:i'}}<br>
+        <div class='button' onclick="window.open('{% url 'doofen:update_exams' %}','_self')">
+            手动更新
+        </div>
+    </div>
+</div>
+{% endblock %}

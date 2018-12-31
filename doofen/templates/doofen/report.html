@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load doofen %}
+
+{% block title %}
+<title>报告</title>
+<style>
+table,tr{
+    width:100%;
+}
+td{
+    width:auto;
+}
+.summary{
+    border:solid 1px #EAEAEA;
+}
+.scroll{
+    overflow:scroll;
+}
+</style>
+<script>
+    function noShare(){
+        $("#share").hide();
+
+        var exdate = new Date();
+        exdate.setDate(exdate.getDate()+200);
+        document.cookie = "noshare=1;expires="+exdate.toGMTString();
+    }
+
+    $(function(){
+        if (document.cookie.indexOf("noshare")==-1) $("#share").show();
+    });
+</script>
+{% endblock %}
+
+{% block body %}
+<div class='card'>
+    <div class='subtitle'>报告</div>
+    <div class='subcontent'>
+        考试名称: <br>{{exam_name}}<br><br>
+        考试科目: <br>{{exam_subs|join:','}}<br><br>
+        报告科目: <br>{{report_subs|join:','}}<br><br>
+        <div class='button'><del>下载（本页面）</del>暂不可用</div>
+        <div class='button'><del>下载（打印优化版）</del>暂不可用</div><br>
+        <hr>
+        此报告内容来自多分网（学校成绩分析系统提供商），
+        并缓存于本站数据库（保存1个月），
+        本站不对数据有效性负责。<br>
+        （"此报告仅供参考"----多分网上的原话）<br>
+    </div>
+</div>
+<div class='card'>
+    <div class='subtitle'>总览</div>
+    <div class='subcontent scroll'>
+        <table class='summary'>
+            <tr>
+                <td>总分</td>
+                <td>年排</td>
+                <td>班排</td>
+                {% for a in exam_subs %}
+                <td>{{a}}</td>
+                <td>{{a|add:'年排'}}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>{{summary.stuMixScore}}</td>
+                <td>{{summary.stuMixRank}}</td>
+                <td>{{summary.classMixRank}}</td>
+                <td>
+                {{summary.score|safeseq|join:'</td><td>'}}
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% for sub in data %}
+<div class='card'>
+    <div class='subtitle'>{{sub.ScoreInfo.xkName}}</div>
+    <div class='subcontent'>
+        <table class='summary'>
+            <tr>
+                <td>得分</td>
+                <td>总分</td>
+                <td>年级均分</td>
+                <td>班级均分</td>
+                <td>班排</td>
+                <td>年排</td>
+            </tr>
+            <tr>
+                {% with a=sub.ScoreInfo %}
+                <td>{{a.stuScore}}</td>
+                <td>{{a.paperScore}}</td>
+                <td>{{a.gradeAvgScore}}</td>
+                <td>{{a.classAvgScore}}</td>
+                <td>{{a.stuClassRank}}</td>
+                <td>{{a.stuGradeRank}}</td>
+                {% endwith %}
+            </tr>
+        </table><br>
+        <table border="0">
+            {% for i in sub.LostInfo.wrongItemStatInfo %}
+            {% if forloop.first %}
+            <tr>
+                <td>题号</td>
+                <td>得分</td>
+                <td>满分</td>
+                <td>班级均分</td>
+                <td>年级均分</td>
+                <td>题型</td>
+                <td>知识点</td>
+            </tr>
+            {% endif %}
+            <tr style="background-color:#{% cycle 'EAEAEA' 'F4F7F6' %}">
+                <td>{{i.realId}}</td>
+                <td>{{i.qacq}}</td>
+                <td>{{i.qscore}}</td>
+                <td>{{i.qscore|multi:i.classScoreRate|floatformat:2}}</td>
+                <td>{{i.qscore|multi:i.gradeScoreRate|floatformat:2}}</td>
+                <td>{{i.topicName}}</td>
+                <td>{{i.realTopicName}}</td>
+            </tr>
+            {% empty %}
+            <tr>一道题都没错</tr>
+            {% endfor %}
+        </table>
+        <div>
+            <p>需要关注的题目:</p><br>
+            {{sub.LostInfo.itemNeedCare|itemneedx|safe}}
+        </div><br>
+        <div>
+            <p>需要特别关注的题目</p><br>
+            {{sub.LostInfo.itemNeedEffect|itemneedx|safe}}
+        </div>
+    </div>
+</div>
+{% endfor %}
+<br><br>
+<div class='card' style="display:none" id="share">
+    <div class='subtitle'>分享</div>
+    <div class='subcontent'>
+        <p>
+        本网站对您有帮助吗？<br>
+        考虑分享一下本站伐？<br>
+        你的分享是本站的动力！
+        </p>
+        <div class='button' onclick="window.open('https://h5.qzone.qq.com/ugc/share/F1C59886BD4583EC4DAA47133F2F76F3?uw=331843470&subtype=0&blog_photo=0&appid=311&ciphertext=F1C59886BD4583EC4DAA47133F2F76F3&g_f=&_wv=1');noShare();">好的！现在转发宣传说说</div>
+        <div class='button' onclick="$('#share').hide();">我很忙，以后再说吧</div>
+        <div class='button' onclick="noShare();">拒绝，并且别再问我</div>
+    </div>
+</div>
+{% endblock %}

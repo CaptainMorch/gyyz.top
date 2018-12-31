@@ -1,0 +1,7 @@
+*.pyc
+__pycache__
+/static
+error.log
+django.log
+secrets.py
+manage.py

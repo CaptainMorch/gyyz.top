@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>报告查询</title>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="subtitle">查询</div>
+        <div class='subcontent'>
+        <form name='' action={% url 'doofen:check' %} method='post'>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div>
+                **若首次查询请忽略密码框<br>
+                届名选择2019/2020/2021</div>
+            {{ form.as_p }}
+            <input type='submit' class='button' value='查询'><br>
+        </form>
+        <a href="{% url 'doofen:resetpwd' %}">找回密码</a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>总览</title>
+<script src="/static/js/echarts.js"></script>
+<script>
+    $(function(){
+        var data = {{data|safe}};
+
+        for (var i=0;i<data.length;i++){
+            var t = data[i];
+            var option = {
+                xAxis: {
+                    type:"category",
+                    boundaryGap:false,
+                    data: t.xAxis
+                },
+                yAxis: {
+                    type: "value"
+                },
+                series: [{
+                    type: "line",
+                    markLine: {
+                        data: [{
+                            type: "average",
+                            name: "平均值"
+                        }]
+                    },
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'top'
+                        }
+                    },
+                    data: t.data
+                }]
+            }
+            var lineChart = echarts.init($("#id_topic_"+t.topic_id).get(0));
+            lineChart.setOption(option);
+        }
+    });
+</script>
+<style>
+    .container{
+        width:100%;
+        height:400px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="card">
+    <div class='subtitle'>总览</div>
+    <div class='subcontent'>
+        <p>总览科目: {{summary_subs|join:','}}</p><br>
+        <p>总览试卷: </p>
+        {{summary_exams|join:',<br>'}}
+    </div>
+</div>
+
+{% for topic in topics %}
+<div class='card'>
+    <div class='subtitle'>{{topic.name}}</div>
+    <div class='subcontent'>
+        <div class='container' id='id_topic_{{topic.topic_id}}'></div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}
