@@ -17,14 +17,15 @@ from django.contrib import admin
 from django.urls import include,path
 from django.views.generic import TemplateView
 
-from page import views
+import secrets
+import page.views
 
 urlpatterns = [
     path('captcha/',include('captcha.urls')),
     path('doofen/', include('doofen.urls')),
     path('info/', include('info.urls')),
     path('app/', TemplateView.as_view(template_name='app.html'),name='app'),
-    path('<str:page>/', views.static, name='static_page'),
-    path('captain/morch/', admin.site.urls),
-    path('', views.home, name='home'),
+    path('about/', TemplateView.as_view(template_name='about.html'),name='about'),
+    path(secrets.ADMIN_URL, admin.site.urls),
+    path('', page.views.home,name='home'),
 ]

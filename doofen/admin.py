@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Student,ResetLink,Classnum,Exam,Report,Session
+from .models import Student,ResetLink,Classnum,Exam,Report,Session,TeacherAccount
 # Register your models here.
 
 
@@ -15,4 +15,4 @@ class ExamAdmin(admin.ModelAdmin):
     list_display = ('name','classnum')
 
 
-admin.site.register([Student,Classnum,ResetLink,Session])
+admin.site.register([Student,Classnum,ResetLink,Session,TeacherAccount])

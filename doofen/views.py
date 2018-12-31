@@ -3,7 +3,6 @@ from json import dumps,loads
 from django.shortcuts import render,redirect,reverse,get_object_or_404
 from django.db.models import ObjectDoesNotExist
 from django.http.response import HttpResponseNotFound
-from django.http import http_404
 import datetime
 from django.utils import timezone
 from django.core import mail
@@ -233,6 +232,10 @@ def report(request):
         else:
             context['data'].append(loads(report.content))
     return render(request,'doofen/report.html',context)
+
+
+def download(request):
+    pass
 
 
 def sumpost(request):

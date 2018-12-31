@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>一粟APP</title>
+<style>
+.applogo{
+    height:150px;
+    width:150px;
+}
+</style>
+<script>
+    {% if is_app %}
+    $(function(){
+        if (app_vision == 1000){
+            $(".button").text("已为最新版本");
+            $(".button").attr("onclick",'');
+        }
+    });
+    {% endif %}
+</script>
+{% endblock %}
+
+{% block body %}
+<img src='/static/img/yisu.png' alt='yisu.png'class='applogo'>
+<p>一粟 APP 安卓版</p>
+<p>最新版本:1.0.1</p>
+<div class='button' onclick="window.open('/static/app/yisu_1_0_1.apk')">下载最新安装包</div>
+{% endblock %}
+

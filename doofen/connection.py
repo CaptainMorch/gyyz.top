@@ -1,5 +1,4 @@
-from base64 import b64encode
-from hashlib import md5
+from random import randrange
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import timedelta
@@ -35,10 +34,10 @@ class Connection():
     def login(self):
         try:
             # try to load account of specified class
-            account = TeacherAccount.get(classnum=self.classnum)
+            account = TeacherAccount.objects.get(classnum=self.classnum)
         except ObjectDoesNotExist:
             # get a randomtic account 
-            accounts = TeacherAccount.all()
+            accounts = TeacherAccount.objects.all()
             account = accounts[randrange(accounts.count())]
 
         data_send = {

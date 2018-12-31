@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>主页</title>
+<style>
+    ul{
+        text-align:left!important;
+        list-style-type:none;
+    }
+    textarea{
+        width:80%;
+        height:70px;
+        background-color:#F6FAFA;
+        border:solid 1px #E6EAEA;
+    }
+    .func-list{
+        text-align:left;
+    }
+    .func-card{
+        cursor:pointer;
+        border:solid 1px #E6EAEA;
+        padding:5px;
+        box-shadow:1px 1px 3px #A0A0A0;
+        display:inline-block;
+        width:30%;
+        height:auto;
+    }
+    .dates{
+        text-align:left;
+        width:100%;
+        padding:0;
+    }
+    .dates>li{
+        text-align:left!important;
+        width:100%;
+        padding:5%;
+        margin:10px 0;
+        border-bottom:solid 1px #E6EAEA;
+    }
+    .updates{
+        padding:0;
+        width:100%;
+    }
+    .updates>li{
+        display:block;
+        text-align:left!important;
+    }
+    .update-detail{
+        display:none;
+    }
+    .icon{
+        display:block;
+        margin-bottom:10px;
+        font-size:40px;
+        color:#505050;
+    }
+</style>
+<script>
+    $(function(){
+        $(".update-title").click(function(){
+            $(this).next().slideToggle();
+        });
+    });
+</script>
+{% endblock %}
+
+{% block body %}
+<div class='card'>
+    <div class='subtitle'>欢迎</div>
+    <div class='subcontent'>
+        欢迎访问本站！<br>
+        本站<b>仅为个人</b>兴趣项目，<br>
+        如有侵犯请联系站长删除。<br>
+        更多信息请访问'关于'页面
+    </div>
+</div>
+<div class='card'>
+    <div class='subtitle'>{{board.title}}</div>
+    <div class='subcontent'>
+        {{board.text|safe}}
+    </div>
+</div>
+<div class='card func-card'>
+    <div class='subtitle'>工具列表</div>
+    <div class='subcontent func-list'>
+        <div class='func-card' onclick="window.open('{% url 'doofen:home' %}','_self')">
+            <i class='iconfont icon'>&#xe606;</i>
+            <p>月考报告查询</p>
+        </div>
+        <div class='func-card' onclick="window.open('{% url 'info:home' %}','_self')">
+            <i class='iconfont icon'>&#xe62c;</i>
+            <p>高考信息聚合</p>
+        </div>
+    </div>
+</div>
+<div class='card'>
+    <div class='subtitle'>吐槽开发者</div>
+    <div class='subcontent'>
+        <form name='words' action='/' method='post'>
+            {% csrf_token %}
+            <textarea required=true placeholder='描述问题/提出建议' name='words'></textarea><br>
+            <input class='button' type='submit' value='提交'>
+        </form>
+    </div>
+</div>
+<div class='card'>
+    <div class='subtitle'>更新日志</div>
+    <div class='subcontent'>
+        点击可查看更新细节
+        <ul class='dates'>
+        {% for date in dates %}
+            <li>
+            {{date.date|date:'Y-n-j'}}
+                <ul class='updates'>
+                {% for update in date.updates %}
+                <li>
+                    <div class='update-title'>{{update.title}}</div>
+                    <div class='update-detail'>{{update.detail}}</div>
+                </li>
+            {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+        </ul>
+
+        <!--
+        <ul>
+            2018-11-24
+            <li>上线</li>
+            2018-11-25
+            <li>新增设置密码功能</li>
+            2018-11-26
+            <li>开始记录网站流量</li>
+            <li>界面优化</li>
+            <li>修复bug若干</li>
+            2018-11-28
+            <li>修复无法读取总览缓存的问题</li>
+            <li>修复连点"查看报告"导致错误的问题</li>
+            <li>考试列表现在默认选取最近一次考试了</li>
+            <li>优化各页面表单提示</li>
+            2018-11-29
+            <li>完成了重置密码功能</li>
+            <li>优化部分界面</li>
+            2018-11-30
+            <li>使用了阿里图标源</li>
+            <li>界面优化</li>
+            2018-12-1
+            <li>厚颜无耻地在报告页加入了本站宣传说说链接</li>
+            2018-12-2
+            <li>新增历次排名折线图</li>
+            <li>bug 修复</li>
+        </ul>
+        --!>
+    </div>
+</div>                               
+{% endblock %}

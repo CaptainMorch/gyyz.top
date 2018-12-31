@@ -92,6 +92,9 @@ class Report(models.Model):
     content = models.TextField()
     add_date = models.DateField(auto_now_add=True)
     
+    def __str__(self):
+        return str(self.student) + str(self.exam) + str(self.topic)
+
     class Meta:
         unique_together = ('student','exam','topic')
 

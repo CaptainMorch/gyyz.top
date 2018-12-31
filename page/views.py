@@ -1,5 +1,3 @@
-import os
-
 from django.shortcuts import render,redirect
 from django.http import Http404
 from django.conf import settings
@@ -8,13 +6,6 @@ from django.core.mail import EmailMultiAlternatives
 from .models import Update,Board
 
 # Create your views here.
-
-def static(request,page):
-    file_path = '{0}page/{1}.html'.format(settings.STATIC_ROOT,page)
-    if os.path.isfile(file_path):
-        return render(request,page+'.html')
-    else:
-        raise Http404()
 
 def home(request):
     if request.method == 'POST':
@@ -37,5 +28,3 @@ def home(request):
         dates.reverse()
 
         return render(request, 'home.html',{'dates':dates,'board':board})
-
-     
