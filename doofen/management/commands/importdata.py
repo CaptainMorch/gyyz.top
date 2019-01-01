@@ -47,38 +47,40 @@ class Command(BaseCommand):
             return None
 
         def error(msg):
+            nonlocal errors,max_errors
             errors += 1
-            self.stdout.write('[Error] {0}(jump{d:1})'.format(msg,errors))
+            self.stdout.write('[Error] {0}(jump{1:d})'.format(msg,errors))
             if errors > max_errors:
                 self.stdout.write('Max errors,stop!')
                 raise
             return None
 
         try:
-            f = open(os.path.join(settings.BASE_DIR,options['path']),'rb')
+            f = open(os.path.join(settings.BASE_DIR,options['path']),'r')
         except FileNotFoundError:
             error('File Not Found.')
             return
 
         reader = csv.DictReader(f)
     
-        full_data = reader.next()
-        if full_data['姓名'] != '满分':
-            error('the second line must be full score data!')
-            return None
+        if topic_id != 9:
+            full_data = next(reader)
+            if full_data['姓名'] != '满分':
+                error('the second line must be full score data!')
+                return None
 
-        avg_data = reader.next()
-        if avg_data['姓名'] != '均分':
-            error('the third line must be average score data!')
-            return None
+            avg_data = next(reader)
+            if avg_data['姓名'] != '均分':
+                error('the third line must be average score data!')
+                return None
 
         for data in reader:
-            class_id = '851001' + str(int(options['grade']-3)) +\
+            class_id = '851001' + str(int(options['grade'])-3) +\
                 data['班级'].zfill(3)
             try:
                 student = models.Student.objects.get(
                         name=data['姓名'],
-                        classnum__id=class_id
+                        classnum__class_id=class_id
                         )
             except ObjectDoesNotExist:
                 warn('Can\'t find student '+data['姓名'])
@@ -86,61 +88,73 @@ class Command(BaseCommand):
 
             try:
                 exam = models.Exam.objects.get(
-                        exam_id=options['exam-id'],
+                        exam_id=options['exam_id'],
                         classnum=student.classnum
                         )
             except ObjectDoesNotExist:
                 error('exam {} not found'.format(options['exam_id']))
             if topic_id == 9:
+                exam_subs = exam.get_subjects()
                 content = {
-                        'stuMixRank':data['年排'],
-                        'stuMixScore':data['总分'],
-                        'score':[None]*len(exam.get_subjects*2),
+                        'stuMixRank':int(data['年排']),
+                        'stuMixScore':float(data['总分']),
+                        'score':[None]*(len(exam_subs)*2),
                         'stuName':str(student),
                         'classMixRank':None
-
                         }
                 for key in data:
-                    if key in sub_table:
-                        index = sub_table.index(key) * 2
-                        content['scores'][index] = data[key]
+                    if key in exam_subs:
+                        index = exam_subs.index(key) * 2
+                        try:
+                            tmp = float(data[key])
+                        except ValueError:
+                            tmp = None
+                        content['score'][index] = tmp
                     else:
                         tmp = key.replace('年排','')
-                        if tmp in sub_table:
-                            index = sub_table.index(tmp)*2 + 1
-                            content['score'][index] = data[key]
+                        if tmp in exam_subs:
+                            index = exam_subs.index(tmp)*2 + 1
+                            try:
+                                score = float(data[key])
+                            except ValueError:
+                                score = None
+                            content['score'][index] = score
             else:
                 content = {
                         'ScoreInfo':{
-                            'stuGradeRank':data['年排'],
+                            'stuGradeRank':int(data['年排']),
                             'cName':str(student.classnum),
                             'xkName':options['topic'],
-                            'stuScore':data['总分'],
-                            'gradeAvgScore':avg_data['总分'],
-                            'paperScore':full_data['总分'],
+                            'stuScore':float(data['总分']),
+                            'gradeAvgScore':float(avg_data['总分']),
+                            'paperScore':int(full_data['总分']),
                             'stuName':student.name,
-                            'stuClassRank':data['班排'],
+                            'stuClassRank':int(data['班排']),
                             },
                         'Performance':{
                             'stuStable':data.get('评价',None),
                             },
                         'LostInfo':{
-                            'wrongItemStatInfo':[,],
+                            'wrongItemStatInfo':list(),
                             },
                         }
                 
                 for key in data:
                     if any([b.isnumeric() for b in key]):
+                        if data[key] == 'None' or data[key] == full_data[key]:
+                            continue
                         try:
-                            grade_rate = (float(data[key])/avg_data[key]).round(4)
+                            grade_rate = round(float(avg_data[key])/float(full_data[key]),4)
                         except:
-                            warn('strange data ' +data[key])
+                            raise
+                            error('strange data ' +data[key])
                             grade_rate = None
                         info = {
                                 'realId':key,
-                                'qacq':data[key],
-                                'qscore':full_data[key],
+                                'qacq':float(data[key]),
+                                'qscore':float(full_data[key]),
                                 'gradeScoreRate':grade_rate,
+                                'classScoreRate':None,
                                 }
                         content['LostInfo']['wrongItemStatInfo'].append(info)
                 
@@ -149,8 +163,8 @@ class Command(BaseCommand):
                 student=student,
                 topic=topic_id
                 )
-            if sets.exist():
-                warn('delete existed report.')
+            if sets.exists():
+                #info('delete existed report.')
                 sets.delete()
             models.Report.objects.create(
                     exam=exam,

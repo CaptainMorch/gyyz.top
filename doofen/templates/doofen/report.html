@@ -39,8 +39,7 @@ td{
         考试名称: <br>{{exam_name}}<br><br>
         考试科目: <br>{{exam_subs|join:','}}<br><br>
         报告科目: <br>{{report_subs|join:','}}<br><br>
-        <div class='button'><del>下载（本页面）</del>暂不可用</div>
-        <div class='button'><del>下载（打印优化版）</del>暂不可用</div><br>
+        <div class='button'><del>下载打印版</del>暂不可用</div><br>
         <hr>
         此报告内容来自多分网（学校成绩分析系统提供商），
         并缓存于本站数据库（保存1个月），
@@ -133,18 +132,4 @@ td{
     </div>
 </div>
 {% endfor %}
-<br><br>
-<div class='card' style="display:none" id="share">
-    <div class='subtitle'>分享</div>
-    <div class='subcontent'>
-        <p>
-        本网站对您有帮助吗？<br>
-        考虑分享一下本站伐？<br>
-        你的分享是本站的动力！
-        </p>
-        <div class='button' onclick="window.open('https://h5.qzone.qq.com/ugc/share/F1C59886BD4583EC4DAA47133F2F76F3?uw=331843470&subtype=0&blog_photo=0&appid=311&ciphertext=F1C59886BD4583EC4DAA47133F2F76F3&g_f=&_wv=1');noShare();">好的！现在转发宣传说说</div>
-        <div class='button' onclick="$('#share').hide();">我很忙，以后再说吧</div>
-        <div class='button' onclick="noShare();">拒绝，并且别再问我</div>
-    </div>
-</div>
 {% endblock %}

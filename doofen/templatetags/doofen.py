@@ -4,7 +4,10 @@ register = template.Library()
 
 @register.filter
 def multi(value,arg):
-    return value * arg
+    if value and arg:
+        return value * arg
+    else:
+        return '空'
 
 @register.filter
 def itemneedx(value):

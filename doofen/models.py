@@ -62,6 +62,7 @@ class Exam(models.Model):
     summary_subs = models.IntegerField(default=0)
     classnum = models.ForeignKey('Classnum',on_delete=models.CASCADE)
     exam_date = models.DateField(null=True)
+    off_line = models.BooleanField(default=False)
 
     sub_table = ['语文','数学','英语','物理','化学','政治','历史','地理','生物']
 

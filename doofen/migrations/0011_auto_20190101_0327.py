@@ -11,20 +11,20 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-#        migrations.CreateModel(
-#            name='TeacherAccount',
-#            fields=[
-#                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-#                ('username', models.CharField(max_length=25)),
-#                ('password', models.CharField(max_length=32)),
-#                ('classnum', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='doofen.Classnum')),
-#            ],
-#        ),
-#        migrations.AddField(
-#            model_name='session',
-#            name='classnum',
-#            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='doofen.Classnum'),
-#        ),
+        migrations.CreateModel(
+            name='TeacherAccount',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('username', models.CharField(max_length=25)),
+                ('password', models.CharField(max_length=32)),
+                ('classnum', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='doofen.Classnum')),
+            ],
+        ),
+        migrations.AddField(
+            model_name='session',
+            name='classnum',
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='doofen.Classnum'),
+        ),
         migrations.AlterUniqueTogether(
             name='report',
             unique_together={('student', 'exam', 'topic')},

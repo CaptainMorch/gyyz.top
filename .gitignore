@@ -1,7 +1,9 @@
 *.pyc
 *.swp
 *.swo
+*.csv
 __pycache__
+/importdata
 /static
 error.log
 django.log
