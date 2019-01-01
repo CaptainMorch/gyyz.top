@@ -4,6 +4,7 @@ from json import loads
 from urllib import request as ur
 import hashlib
 
+import secrets
 # Create your models here.
 
 class Student(models.Model):
@@ -20,7 +21,7 @@ class Student(models.Model):
     def get_digest(self,passwd):
         m = hashlib.md5()
         m.update(passwd.encode())
-        salt = '£' + self.name
+        salt = secrets.SALT + self.name
         m.update(salt.encode())
 
         return m.hexdigest()
