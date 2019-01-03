@@ -2,6 +2,37 @@
 
 {% block title %}
     <title>报告查询</title>
+    {% comment %}<script>
+	$(function(){
+		$('#id_passwd').hide();
+
+		$('.button').click(function(){
+		window.submit = true
+		var parse = {
+			grade:$('#id_grade').val(),
+			cls:$('#id_classnum').val(),
+			name:$('#id_name').val()
+		};
+		$.getJSON(
+			"/doofen/ajax/login",
+			parse,
+			function(result){
+				if(result.success){
+					if(result.has_pwd){
+						$('#id_passwd').show();
+						$('#forget_pwd').show();
+						$('#id_passwd').attr('placehpolder','输入您的查看密码');
+						window.submit = false
+					}
+				}
+			}
+		);
+		if(window.submit) 
+			$('#submit').click();
+		});
+	});
+	</script>
+	{% endcomment %}
 {% endblock %}
 
 {% block body %}
@@ -12,12 +43,15 @@
             {% csrf_token %}
             {{ form.non_field_errors }}
             <div>
-                **若首次查询请忽略密码框<br>
+		    ** 未设置密码则密码留空 **<br>
+		    ** 未设置密码则密码留空 **<br>
+		    ** 未设置密码则密码留空 **<br>
+
                 届名选择2019/2020/2021</div>
             {{ form.as_p }}
-            <input type='submit' class='button' value='查询'><br>
+            <input class='button' type='submit' id='submit' value='查询'><br>
         </form>
-        <a href="{% url 'doofen:resetpwd' %}">找回密码</a>
+        <a id='forget_pwd' href="{% url 'doofen:resetpwd' %}">找回密码</a>
         </div>
     </div>
 {% endblock %}

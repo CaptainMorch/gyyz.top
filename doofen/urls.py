@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import views,ajaxs
 
 app_name = 'doofen'
 urlpatterns = [
@@ -16,4 +16,5 @@ urlpatterns = [
         path('sumpost/',views.sumpost,name='sumpost'),
         path('summary/',views.summary,name='summary'),
         path('',views.home,name='home'),
+        path('ajax/login/',ajaxs.prelogin,name='ajax_login'),
         ]
