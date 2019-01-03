@@ -72,6 +72,9 @@
                 <li onclick="window.open('{% url 'doofen:home' %}','_self')">月考报告</li>
                 <li onclick="window.open('{% url 'info:home' %}','_self')">高考信息</li>
                 <li onclick="window.open('/about','_self')">关于本站</li>
+		{% if is_android and not is_app %}
+		<li onclick="window.open('{% url 'app' %}','_self')">下载 App</li>
+		{% endif %}
             </ul>
         </div>
         {% endif %}
@@ -103,7 +106,7 @@
            All Rights Reserved<br>
 	   <a href="https://github.com/CaptainMorch/gyyz.top">
 		   <i class='iconfont' style='font-size:30px;color:#808080;'>&#xe780;</i>
-		</a>
+	   </a><br>
            <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1275473353'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s23.cnzz.com/z_stat.php%3Fid%3D1275473353' type='text/javascript'%3E%3C/script%3E"));</script>
         </div>
    </body>
