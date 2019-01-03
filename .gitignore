@@ -5,6 +5,7 @@
 __pycache__
 /importdata
 /static
+/files
 error.log
 django.log
 secrets.py
