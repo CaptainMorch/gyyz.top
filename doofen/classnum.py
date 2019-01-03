@@ -40,10 +40,14 @@ def update_exams(classnum):
     for p in range(1,items//10 + bool(items%10) + 1):
         response = loads(ur.urlopen(url+str(p)).read().decode())
         for i in response:
-            exams.setdefault(
+            try:
+                exams.setdefault(
                     i['examId'],
                     {'subs':[]}
                     )['subs'].append(i['xkName'])
+            except KeyError:
+                continue
+
             exams[i['examId']]['name'] = i['examName']
 
     # cache into database.
