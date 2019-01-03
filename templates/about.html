@@ -19,15 +19,29 @@
     </div>
 </div>
 <div class='card'>
-    <div class='subtitle'>下面是信仰</div>
-    <div class='subcontent'>
-        Life is short,I choose Python!
-        <br><hr><br>
-        A Website Powered by Django.
-        <br><hr><br>
-        不过坠吼的是...
-        <br><br>
-        很惭愧，只做了一点微小的贡献□..□
-    </div>
+	<div class='subtitle'>支持我们</div>
+	<div class='subcontent'>
+		本站承诺提供免费优质的服务，<br>
+		但维持网站运行需要资金与精力。<br>
+		如果你愿意分担一部分服务器开支，<br>
+		可以微信识别我们的打赏码来捐赠。<br>
+		（支持 5 元以下打赏）<br>
+		<u onclick="$('#qrcode').show();">点击显示二维码</u>
+		<div id='qrcode' style="display:none">
+			<img width=100 height=100 src='/static/img/support.png'>
+			{% if device_type == 'mobile' %}
+			<p>长按保存到本地，在微信扫一扫中选择'从相册选取二维码'</p>
+			{% endif %}
+		</div>
+	</div>
+</div>
+<div class='card'>
+	<div class='subtitle'>加入我们</div>
+	<div class='subcontent'>
+		纯兴趣项目，无经济报酬;<br>
+		工作量小，要求低，较自由随意;<br>
+		前端美工,后端(Django),移动开发均可<br>
+		详询 captainmorch@gyyz.top
+	</div>
 </div>
 {% endblock %}
