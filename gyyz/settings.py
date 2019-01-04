@@ -140,12 +140,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
-
 MEDIA_ROOT = os.path.join(BASE_DIR,'files')
+
+TEMP_DIR = os.path.join(BASE_DIR,'temp')
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gyyz.top'
 EMAIL_PORT = 465

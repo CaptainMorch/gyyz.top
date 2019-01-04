@@ -2,11 +2,15 @@ from urllib import request as ur
 from json import dumps,loads
 from django.shortcuts import render,redirect,reverse,get_object_or_404
 from django.db.models import ObjectDoesNotExist
-from django.http.response import HttpResponseNotFound
+from django.http.response import FileResponse,HttpResponseNotFound
+from django.conf import settings
 import datetime
 from django.utils import timezone
 from django.core import mail
 import random
+import io
+
+import xlsxwriter
 
 from . import forms,models
 from .student import get_summary
@@ -190,7 +194,7 @@ def updateexams(request):
     return redirect(reverse('doofen:exam'))
 
 
-def report(request):
+def report(request,to_context=False):
     try:
         stu_id = request.session['stu_id']
         exam_id = request.session['exam_id']
@@ -203,6 +207,7 @@ def report(request):
     exam_ = models.Exam.objects.get(exam_id=exam_id,classnum=student.classnum)
     connect = Connection(student.classnum)
 
+    context['student_name'] = str(student)
     context['summary'] = get_summary(student,exam_)
     context['exam_name'] = exam_.name
     context['exam_subs'] = exam_.get_subjects()
@@ -231,11 +236,200 @@ def report(request):
             context['data'].append(loads(response))
         else:
             context['data'].append(loads(report.content))
-    return render(request,'doofen/report.html',context)
+    if to_context:
+        return context
+    else:
+        return render(request,'doofen/report.html',context)
 
 
 def download(request):
-    pass
+    class Pointer:
+        def __init__(self,max_width):
+            '''Notice:max_width is zero-indexed.'''
+            self.column = -1
+            self.row = -1
+            self.max_width = max_width
+
+        def get_cell(self,in_line=False,line_gap=1):
+            if in_line and self.column < self.max_width:
+                self.column += 1
+                return (self.row,self.column)
+            else:
+                self.row += line_gap
+                self.column = 0
+                return (self.row,self.column)
+
+        def get_row(self):
+            self.row += 1
+            self.column = -1
+            return (self.row,0,self.row,self.max_width)
+
+        def skip_row(self,rows=1):
+            self.row += rows
+            self.column = -1
+            return None
+
+    data = report(request,to_context=True)
+
+    if not isinstance(data,dict):
+        return data
+
+    output = io.BytesIO()
+
+    wb = xlsxwriter.Workbook(output,{'tmpdir':settings.TEMP_DIR})
+    fm_title = wb.add_format({
+        'font_name':'微软雅黑',
+        'font_size':24,
+        'align':'center',
+        'valign':'vcenter',
+        'shrink':True,
+        })
+    fm_subtitle = wb.add_format({
+        'font_name':'等线',
+        'font_size':20,
+        'align':'center',
+        'valign':'center',
+        })
+    fm_header = wb.add_format({
+        'font_name':'微软雅黑',
+        'font_size':12,
+        'align':'center',
+        'valign':'center',
+        })
+    fm_value = wb.add_format({
+        'font_name':'微软雅黑',
+        'num_format':'0.0',
+        'font_size':10,
+        'align':'center',
+        'valign':'vjustify',
+        'text_wrap':True
+        })
+    fm_value_gray = wb.add_format({
+        'font_name':'微软雅黑',
+        'num_format':'0.0',
+        'font_size':10,
+        'align':'center',
+        'valign':'vjustify',
+        'text_wrap':True,
+        'bg_color':'#F2F2F2'
+        })
+
+    ws = wb.add_worksheet('数据')
+    ws.set_paper(9)
+    ws.center_horizontally()
+    ws.set_margins(left=0.4,right=0.4,top=0.5,bottom=0.5)
+    ws.set_footer('&C第 &P 页')
+    ws.hide_gridlines(1)
+    ws.fit_to_pages(1,0)
+
+    pointer = Pointer(6)
+
+    ws.merge_range(
+            *pointer.get_row(),
+            data['exam_name'],
+            fm_title
+            )
+    ws.set_row(pointer.row,50)
+    ws.merge_range(
+            *pointer.get_row(),
+            data['student_name'],
+            fm_header
+            )
+    pointer.skip_row(22)
+
+    summary_ = [
+            ['总分',data['summary']['stuMixScore']],
+            ['年排',data['summary']['stuMixRank']],
+            ['班排',data['summary'].get('classMixRank')],
+            ]
+    for sub in data['data']:
+        summary_.append([
+            sub['ScoreInfo']['xkName'],
+            sub['ScoreInfo']['stuScore'],
+            ])
+    for each in summary_:
+        ws.write_column(
+            *pointer.get_cell(in_line=True,line_gap=2),
+            each,
+            fm_header
+            )
+    pointer.skip_row(2)
+
+    for sub in data['data']:
+        info = sub['ScoreInfo']
+        ws.merge_range(
+                *pointer.get_row(),
+                '————{}————'.format(info['xkName']),
+                fm_subtitle
+                )
+        ws.set_row(pointer.row,25)
+        ws.write_row(
+                *pointer.get_cell(),
+                ['得分','满分','班排','年排','班级均分','年级均分','评价'],
+                fm_header
+                )
+        ws.write_row(
+                *pointer.get_cell(),
+                [
+                    info.get('stuScore'),
+                    info.get('paperScore'),
+                    info.get('stuClassRank'),
+                    info.get('stuGradeRank'),
+                    info.get('classAvgScore'),
+                    info.get('gradeAvgScore'),
+                    sub['Performance'].get('stuStable')
+                    ],
+                fm_value
+                )
+        pointer.skip_row()
+ 
+        ws.write_row(
+                *pointer.get_cell(in_line=False),
+                ['题号','题型','得分','满分','班级均分','年级均分','知识点'],
+                fm_header
+                )
+        items = sub['LostInfo'].get('wrongItemStatInfo')
+        if items:
+            for i in range(len(items)):
+                item = items[i]
+                try:
+                    cls_score = item.get('classScoreRate')*item.get('qacq')
+                except TypeError:
+                    cls_score = None
+                try:
+                    grade_score = item.get('gradeScoreRate')*item.get('qacq')
+                except TypeError:
+                    grade_score = None
+
+                ws.write_row(
+                        *pointer.get_cell(),
+                        [
+                            item.get('realId'),
+                            item.get('topicName'),
+                            item.get('qacq'),
+                            item.get('qscore'),
+                            cls_score,
+                            grade_score,
+                            item.get('realTopicName'),
+                            ],
+                        fm_value if i%2 else fm_value_gray
+                        )
+        pointer.skip_row()
+
+    ws.print_area(0,0,pointer.row,pointer.max_width)
+    ws.set_column(0,pointer.max_width,12)
+    wb.close()
+
+    output.seek(0)
+    response = FileResponse(
+            output,
+            as_attachment=True,
+            filename='{0}_{1}.xlsx'.format(
+                data['student_name'],
+                data['exam_name']
+                )
+            )
+    return response
 
 
 def sumpost(request):
