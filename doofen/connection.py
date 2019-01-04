@@ -55,7 +55,9 @@ class Connection():
         # send login request
 
         info = str(response.info())
-        sessionid = info[info.find("JSESSIONID=")+11:info.find("; Path")]
+        for each in info.split(';'):
+            if each.find('JSESSIONID')+1:
+                sessionid = each.split('=')[1]
         # get session id
         response = response.read().decode()
 
