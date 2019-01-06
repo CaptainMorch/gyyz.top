@@ -335,7 +335,7 @@ def download(request):
             data['student_name'],
             fm_header
             )
-    pointer.skip_row(22)
+    pointer.skip_row(2)
 
     summary_ = [
             ['总分',data['summary']['stuMixScore']],

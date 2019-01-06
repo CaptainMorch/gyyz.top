@@ -54,8 +54,8 @@ class Connection():
         response = ur.urlopen(request)
         # send login request
 
-        info = str(response.info())
-        for each in info.split(';'):
+        info = response.info()
+        for each in info['Set-Cookie'].split(';'):
             if each.find('JSESSIONID')+1:
                 sessionid = each.split('=')[1]
         # get session id
