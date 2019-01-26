@@ -11,7 +11,7 @@ def load_summary(exam):
     False if from cache.
     '''
 
-    if exam.subjects != exam.summary_subs and not exam.offline:
+    if exam.subjects != exam.summary_subs and not exam.off_line:
         Report.objects.filter(topic=9,exam=exam).delete()
 
         connect = Connection(exam.classnum)

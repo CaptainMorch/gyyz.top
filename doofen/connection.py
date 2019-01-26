@@ -69,8 +69,7 @@ class Connection():
 
     def get_session(self):
         try:
-            latest = Session.objects.filter(
-                    classnum=self.classnum).latest('last_use')
+            latest = Session.objects.latest('last_use')
         except ObjectDoesNotExist:
             td = timedelta(1,0,0)
         else:

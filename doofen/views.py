@@ -393,11 +393,11 @@ def download(request):
             for i in range(len(items)):
                 item = items[i]
                 try:
-                    cls_score = item.get('classScoreRate')*item.get('qacq')
+                    cls_score = item.get('classScoreRate')*item.get('qscore')
                 except TypeError:
                     cls_score = None
                 try:
-                    grade_score = item.get('gradeScoreRate')*item.get('qacq')
+                    grade_score = item.get('gradeScoreRate')*item.get('qscore')
                 except TypeError:
                     grade_score = None
 
@@ -457,7 +457,9 @@ def summary(request):
 
     context = dict()
     student = models.Student.objects.get(stu_id=stu_id)
-    exams = models.Exam.objects.filter(classnum=student.classnum)
+    exams = models.Exam.objects.filter(
+            classnum=student.classnum
+            ).order_by('exam_date')
 
     context['summary_exams'] = list(exams.values_list('name',flat=True))
     context['summary_subs'] = subjects

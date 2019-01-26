@@ -10,12 +10,21 @@
         for (var i=0;i<data.length;i++){
             var t = data[i];
             var option = {
+		grid: {
+			containLabel:true
+		},
                 xAxis: {
+			position:"top",
+			axisLabel:{
+				interval:0,
+				rotate:-45
+			},
                     type:"category",
                     boundaryGap:false,
                     data: t.xAxis
                 },
                 yAxis: {
+			inverse:true,
                     type: "value"
                 },
                 series: [{
@@ -32,6 +41,7 @@
                             position: 'top'
                         }
                     },
+		    smooth:true,
                     data: t.data
                 }]
             }
@@ -43,7 +53,7 @@
 <style>
     .container{
         width:100%;
-        height:400px;
+        height:600px;
     }
 </style>
 {% endblock %}
