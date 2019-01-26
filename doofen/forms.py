@@ -1,12 +1,11 @@
 from django import forms
-from captcha.fields import CaptchaField
+
 
 class Student(forms.Form):
     grade = forms.CharField(label='届别',max_length=4,min_length=4)
     classnum = forms.CharField(label='班级',min_length=1,max_length=2)
     name = forms.CharField(label='姓名',max_length=8)
     passwd = forms.CharField(label='密码',widget=forms.PasswordInput,required=False,max_length=20)
-    captcha = CaptchaField(label='验证码',error_messages={'invalid':'验证码错误'})
 
     def clean(self):
         cleaned_data = super().clean()
@@ -17,7 +16,6 @@ class Student(forms.Form):
             if not all([grade.isdigit(),classnum.isdigit()]):
                 raise forms.ValidationError('班级与届别只含数字')
         return cleaned_data
-
 
 
 class Register(forms.Form):
@@ -41,7 +39,6 @@ class ResetForm(forms.Form):
     classnum = forms.CharField(label='班级',min_length=1,max_length=2)
     name = forms.CharField(label='姓名',max_length=8)
     email = forms.EmailField(label='邮箱',error_messages={'invalid':'邮箱格式错误'})
-    captcha = CaptchaField(label='验证码',error_messages={'invalid':'验证码错误'})
 
     def clean(self):
         cleaned_data = super().clean()

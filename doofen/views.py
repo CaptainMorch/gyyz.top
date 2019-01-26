@@ -1,14 +1,14 @@
 from urllib import request as ur
+from urllib.parse import urlencode
 from json import dumps,loads
 from django.shortcuts import render,redirect,reverse,get_object_or_404
 from django.db.models import ObjectDoesNotExist
-from django.http.response import FileResponse,HttpResponseNotFound
+from django.http.response import FileResponse,HttpResponseNotFound,HttpResponseForbidden
 from django.conf import settings
 import datetime
 from django.utils import timezone
 from django.core import mail
-import random
-import io
+import random,io,sys
 
 import xlsxwriter
 
@@ -16,15 +16,30 @@ from . import forms,models
 from .student import get_summary
 from .connection import Connection
 from .classnum import get_exams,update_exams
+sys.path.append('..')
+import secrets
 
 
 # Create your views here.
 def home(request):
     return render(request,'doofen/home.html')
 
+def verify_captcha(request):
+    url = 'https://www.google.com/recaptcha/api/siteverify'
+    data = {
+            'secret':secrets.RECAPTCHA_SECRET_KEY,
+            'response':request.POST['g-recaptcha-response'],
+            }
+    data = urlencode(data).encode('utf-8')
+    result = ur.urlopen(url,data=data).read().decode()
+    return loads(result)['success']
 
 def check(request):
     if request.method == 'POST':
+
+        if not verify_captcha(request):
+            return HttpResponseForbidden()  # feed robots with 403
+
         form = forms.Student(request.POST)
 
         if form.is_valid():
@@ -86,6 +101,10 @@ def register(request):
 def resetpwd(request):
     if request.method == 'POST':
         form = forms.ResetForm(request.POST)
+
+        if not verify_captcha(request):
+            return HttpResponseForbidden
+
         if form.is_valid():
             data = form.cleaned_data
 

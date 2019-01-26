@@ -2,6 +2,7 @@
 
 {% block title %}
     <title>报告查询</title>
+    <script src='https://recaptcha.net/recaptcha/api.js' async defer></script>
     {% comment %}<script>
 	$(function(){
 		$('#id_passwd').hide();
@@ -49,6 +50,7 @@
 
                 届名选择2019/2020/2021</div>
             {{ form.as_p }}
+	    <div class='g-recaptcha' data-sitekey='6LcoPosUAAAAABMZHfJMNckwewue2CMiclOYbeiN'></div>
             <input class='button' type='submit' id='submit' value='查询'><br>
         </form>
         <a id='forget_pwd' href="{% url 'doofen:resetpwd' %}">找回密码</a>
