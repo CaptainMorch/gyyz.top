@@ -21,7 +21,6 @@ import secrets
 import page.views
 
 urlpatterns = [
-    path('captcha/',include('captcha.urls')),
     path('doofen/', include('doofen.urls')),
     path('info/', include('info.urls')),
     path('app/', TemplateView.as_view(template_name='app.html'),name='app'),
